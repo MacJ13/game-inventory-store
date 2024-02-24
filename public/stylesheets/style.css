@@ -1,8 +1,53 @@
-body {
-  padding: 50px;
+*,
+*::after,
+*::before {
+  box-sizing: inherit;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  box-sizing: border-box;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
+body {
+  background-color: black;
+  color: #fff;
+  /* padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif; */
+}
+
 a {
-  color: #00B7FF;
+  /* color: #00b7ff; */
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+ul {
+  list-style-type: none;
+}
+
+.nav {
+  flex: 0;
+}
+
+.content {
+  flex: 1;
+  display: flex;
+}
+
+.flex-gap-1 {
+  gap: 1rem;
+}
+
+.row {
+  height: 100%;
+}
+
+.container-min-full {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100vh;
 }
