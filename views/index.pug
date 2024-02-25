@@ -2,6 +2,11 @@ extends layout
 
 block content
   div.py-5
-    h1.mb-3.text-center Game Store
-    p.text-center Welcome to Invetory store about games. These are the links of store elements
+    div.text-center
+      h1.mb-4 #{title} 
+      div.mb-5
+        p Welcome to Invetory store about games. These are the links of store elements
+        p Currently our store have  #[strong !{game_count} games].
+      a.btn.btn-light.fs-5.fw-semibold.text-uppercase.tracking-widest(href="/game/all") game list
     
+      
