@@ -1,0 +1,24 @@
+extends layout 
+
+block content 
+  div.container.px-5.py-5
+    
+    
+
+   
+    div.d-flex.justify-content-between.mb-5.align-items-center
+      div.d-flex.justify-content-center.flex-column
+        h1.text-capitalize.mb-3 #{title}
+        p.mb-3.fs-5 Country: #[span.fw-semibold #{publisher.country}]
+      div.d-flex.flex-gap-1.justify-content-center
+        a.btn.btn-light.fs-5.fw-semibold.text-uppercase(href='#') Update  
+        a.btn.btn-danger.fs-5.fw-semibold.text-uppercase(href='#') Delete     
+    if games.length 
+      ul.container
+        each game in games 
+          li.fw-semibold.px-3.d-flex.justify-content-between.border-bottom.mb-5
+            div.fs-5.pb-3
+              h3.text-capitalize #{game.title}
+            a.btn.btn-light.fs-5.fw-semibold.text-uppercase.align-self-start(href=game.url) more detail
+    else 
+       p.text-center #[em Publisher games not found]         
