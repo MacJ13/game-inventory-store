@@ -1,0 +1,31 @@
+extends layout 
+
+block content 
+  div.py-5 
+    h1.text-capitalize.mb-3.text-center.mb-4 #{title}
+   
+    div.container.px-5
+      p.text-center.mb-5 #{game.summary}
+      div.d-flex.justify-content-between.mb-4.border-bottom
+        div
+          p.d-flex.flex-gap-1.align-items-center Publisher: #[a.fw-semibold(href='#') #{game.publisher.name}]
+          p.d-flex.flex-gap-1.align-items-center price:  #[span.fw-semibold #{game.price}$]
+        div
+          p.d-flex.flex-gap-1.align-items-center Released year: #[span.fw-semibold #{game.year}]
+          p.d-flex.flex-gap-1 number stock: #[span.fw-semibold #{game.number_in_stock}]
+
+      div.border-bottom.mb-3
+        div.d-flex.flex-gap-1.mb-4.align-items-center
+          | Platforms:
+          each platform in game.platform 
+            a.fw-semibold(href='#') #{platform.name}
+        div.d-flex.flex-gap-1.mb-4.align-items-center
+          | Genre: 
+          each genre in game.genre 
+            a.fw-semibold(href='#') #{genre.name}
+     
+      div.d-flex.flex-gap-1.justify-content-center
+        a(href='#') Update Game 
+        a(href='#') Delete Game    
+    
+
