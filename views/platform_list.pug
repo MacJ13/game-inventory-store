@@ -1,0 +1,13 @@
+extends layout 
+
+block content 
+  div.py-5
+    h1.text-center.mb-5 #{title}
+    div.container.px-5
+      if platforms.length 
+        ul 
+          each platform in platforms 
+            li.fw-semibold.px-3.d-flex.justify-content-between.mb-5
+              a.fs-5.fw-semibold.text-uppercase.align-self-start(href=platform.url) #{platform.name}
+      else 
+        p.text-center #[em There are not platforms in store]    
