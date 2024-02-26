@@ -15,10 +15,14 @@ block content
         a.btn.btn-danger.fs-5.fw-semibold.text-uppercase(href='#') Delete     
     if games.length 
       ul.container
+        h3.fs-5.text-capitalize.mb-3 Publisher Games:
         each game in games 
-          li.fw-semibold.px-3.d-flex.justify-content-between.border-bottom.mb-5
-            div.fs-5.pb-3
-              h3.text-capitalize #{game.title}
-            a.btn.btn-light.fs-5.fw-semibold.text-uppercase.align-self-start(href=game.url) more detail
+          li.fw-semibold.px-3.d-flex.justify-content-between
+            a.fs-3.text-capitalize(href=game.url) #{game.title}
+            //- div.fs-5.pb-3
+           
+            //-   h3.text-capitalize #{game.title}
+            
+            //- a.btn.btn-light.fs-5.fw-semibold.text-uppercase.align-self-start(href=game.url) more detail
     else 
        p.text-center #[em Publisher games not found]         
