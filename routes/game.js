@@ -5,6 +5,10 @@ const router = express.Router();
 const game_controller = require("../controllers/gameController");
 
 // book routes
+router.get("/", (req, res) => {
+  res.redirect("/game/all");
+});
+
 router.get("/all", game_controller.game_list);
 
 router.get("/:id", game_controller.game_detail);
