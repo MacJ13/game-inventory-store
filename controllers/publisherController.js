@@ -1,4 +1,6 @@
 const Publisher = require("../models/publisher");
+const Game = require("../models/game");
+
 const asyncHandler = require("express-async-handler");
 
 // Display list of all Publishers
@@ -13,5 +15,23 @@ exports.publisher_list = asyncHandler(async (req, res, next) => {
 
 // Display publisher detual
 exports.publisher_detail = asyncHandler(async (req, res, next) => {
-  res.send(`NOT IMPLEMENTED: Author detail: ${req.params.id}`);
+  const [publisher, allGamesByPublisher] = await Promise.all([
+    Publisher.findById(req.params.id).exec(),
+    Game.find({ publisher: req.params.id })
+      .sort({ title: 1 })
+      .populate("title")
+      .exec(),
+  ]);
+
+  if (publisher === null) {
+    const error = new Error("Publisher not found");
+    error.status = 404;
+    return next(error);
+  }
+
+  res.render("publisher_detail", {
+    title: publisher.name,
+    publisher: publisher,
+    games: allGamesByPublisher,
+  });
 });
