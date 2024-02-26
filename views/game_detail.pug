@@ -8,7 +8,7 @@ block content
       p.text-center.mb-5 #{game.summary}
       div.d-flex.justify-content-between.mb-4.border-bottom
         div
-          p.d-flex.flex-gap-1.align-items-center Publisher: #[a.fw-semibold(href='#') #{game.publisher.name}]
+          p.d-flex.flex-gap-1.align-items-center Publisher: #[a.fw-semibold(href=game.publisher.url) #{game.publisher.name}]
           p.d-flex.flex-gap-1.align-items-center price:  #[span.fw-semibold #{game.price}$]
         div
           p.d-flex.flex-gap-1.align-items-center Released year: #[span.fw-semibold #{game.year}]
