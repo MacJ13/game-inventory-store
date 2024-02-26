@@ -1,0 +1,15 @@
+extends layout 
+
+block content 
+  div.py-5 
+    h1.text-center.mb-5 #{title}
+    div.container.px-5 
+      if publishers.length
+        ul 
+          each publisher in publishers 
+            li.fw-semibold.px-3.d-flex.justify-content-between.border-bottom.mb-5
+              div.fs-5.pb-3
+                h3.text-capitalize #{publisher.name}
+              a.btn.btn-light.fs-5.fw-semibold.text-uppercase.align-self-start(href=publisher.url) more detail
+      else 
+       p.text-center #[em There are not publishers in store]    
