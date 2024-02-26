@@ -7,9 +7,10 @@ block content
       if publishers.length
         ul 
           each publisher in publishers 
-            li.fw-semibold.px-3.d-flex.justify-content-between.border-bottom.mb-5
-              div.fs-5.pb-3
-                h3.text-capitalize #{publisher.name}
-              a.btn.btn-light.fs-5.fw-semibold.text-uppercase.align-self-start(href=publisher.url) more detail
+            li.fw-semibold.px-3.d-flex.justify-content-between.mb-5
+              a.fs-5.fw-semibold.text-uppercase.align-self-start(href=publisher.url) #{publisher.name}
+            //-   div.fs-5.pb-3
+            //-     h3.text-capitalize #{publisher.name}
+            //-   a.btn.btn-light.fs-5.fw-semibold.text-uppercase.align-self-start(href=publisher.url) more detail
       else 
        p.text-center #[em There are not publishers in store]    

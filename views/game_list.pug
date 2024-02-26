@@ -8,12 +8,12 @@ block content
         if games.length
           ul 
             each game in games 
-              li.fw-semibold.px-3.d-flex.justify-content-between.border-bottom.mb-5
-                div.fs-5  
-                  h3.text-capitalize.mb-3 #{game.title}
+              li.fw-semibold.px-3.d-flex.justify-content-between.mb-5
+                div.fs-5.d-flex.flex-column
+                  a.fs-3.text-capitalize.fw-semibold.mb-3(href=game.url) #{game.title}
                   div.text-light.text-opacity-75.mb-3 #{game.publisher.name}
                   div.text-light.text-opacity-75.mb-3 Released year: #{game.year}      
-                a.btn.btn-light.fs-5.fw-semibold.text-uppercase.align-self-start(href=game.url) more detail
+                //- a.btn.btn-light.fs-5.fw-semibold.text-uppercase.align-self-start(href=game.url) more detail
 
         else 
           p There are no games in store.
