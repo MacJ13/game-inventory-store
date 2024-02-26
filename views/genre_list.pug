@@ -1,0 +1,15 @@
+extends layout 
+
+block content 
+  div.py-5  
+    h1.text-center.mb-5 #{title}
+    div.container.px-5 
+      if genres.length 
+        ul 
+          each genre in genres 
+            li.fw-semibold.px-3.d-flex.justify-content-between.mb-5
+              a.fs-5.fw-semibold.text-uppercase.align-self-start(href=genre.url) #{genre.name}
+            //-   h3.text-capitalize #{genre.name}
+            //-   a.btn.btn-light.fs-5.fw-semibold.text-uppercase.align-self-start(href=genre.url) more detail
+      else 
+         p.text-center #[em Genres not found]   
