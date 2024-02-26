@@ -18,14 +18,14 @@ block content
         div.d-flex.flex-gap-1.mb-4.align-items-center
           | Platforms:
           each platform in game.platform 
-            a.fw-semibold(href='#') #{platform.name}
+            a.fw-semibold(href=platform.url) #{platform.name}
         div.d-flex.flex-gap-1.mb-4.align-items-center
           | Genre: 
           each genre in game.genre 
-            a.fw-semibold(href='#') #{genre.name}
+            a.fw-semibold(href=genre.url) #{genre.name}
      
       div.d-flex.flex-gap-1.justify-content-center
-        a(href='#') Update Game 
-        a(href='#') Delete Game    
+        a.btn.btn-light.fs-5.fw-semibold.text-uppercase(href='#') Update Game 
+        a.btn.btn-danger.fs-5.fw-semibold.text-uppercase(href='#') Delete Game    
     
 
