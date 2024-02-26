@@ -12,7 +12,12 @@ exports.index = asyncHandler(async (req, res, next) => {
 });
 
 exports.game_list = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENT: game list");
+  const games = await Game.find({}, "title publisher year")
+    .populate("publisher")
+    .exec();
+
+  res.render("game_list", { title: "Games", games: games });
+  // res.send("NOT IMPLEMENT: game list");
 });
 
 exports.game_detail = asyncHandler(async (req, res, next) => {

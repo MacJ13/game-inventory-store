@@ -22,7 +22,7 @@ const GameSchema = new Schema({
 
 // Virtual for author's URL
 GameSchema.virtual("url").get(function () {
-  return `/catalog/game/${this._id}`;
+  return `/game/${this._id}`;
 });
 
 // Export model
