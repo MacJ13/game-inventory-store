@@ -15,3 +15,5 @@ block content
         each game in games 
           li.fw-semibold.px-3.d-flex.justify-content-between.mb-3
             a.fs-3.text-capitalize(href=game.url) #{game.title}  
+    else 
+    p.text-center #[em There are not games on this genre]    
