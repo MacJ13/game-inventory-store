@@ -7,7 +7,7 @@ const PlatformSchema = new Schema({
 });
 
 PlatformSchema.virtual("url").get(function () {
-  return `/catalog/platform/${this._id}`;
+  return `/platform/${this._id}`;
 });
 
 module.exports = mongoose.model("Platform", PlatformSchema);
