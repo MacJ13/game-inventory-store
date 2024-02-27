@@ -11,6 +11,8 @@ router.get("/", (req, res) => {
 
 router.get("/all", game_controller.game_list);
 
+router.get("/create", game_controller.game_create_get);
+
 router.get("/:id", game_controller.game_detail);
 
 module.exports = router;
