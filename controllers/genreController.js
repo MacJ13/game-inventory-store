@@ -32,3 +32,8 @@ exports.genre_detail = asyncHandler(async (req, res, next) => {
     games: allGamesByGenre,
   });
 });
+
+// display genre create from on Get
+exports.genre_create_get = asyncHandler(async (req, res, next) => {
+  res.render("genre_form", { title: "Add New Genre" });
+});
