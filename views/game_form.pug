@@ -1,0 +1,58 @@
+extends layout 
+
+block content 
+  div.container.px-5.py-5
+    h1.text-center.mb-5 #{title}
+
+    if errors
+      ul.d-flex.justify-content-center.mb-4
+        for error in errors
+          li!= error.msg
+
+    form(method='POST')
+      div.form-group.d-flex.flex-gap-1.align-items-center.justify-content-center.mb-4.container-sm
+        input#title.form-control.form-control-lg.bg-dark.text-light.border-0.focus-ring.focus-ring-secondary(type='text', placeholder='Enter game title' name='title' required value=(undefined===game ? '' : game.title) )
+      div.form-group.d-flex.flex-gap-1.align-items-center.justify-content-center.mb-4.container-sm
+        select#publisher.text-capitalize.form-control.form-control-lg.bg-dark.text-light.border-0.focus-ring.focus-ring-secondary(name='publisher' required)
+          option.text-capitalize(value='') --Please choose a publisher --
+          for publisher in publishers 
+            if game
+              if publisher._id.toString()===game.publisher._id.toString()
+                option(value=publisher._id selected)  #{publisher.name}
+              else 
+                option(value=publisher._id) #{publisher.name}
+            else 
+              option(value=publisher._id) #{publisher.name}
+      div.form-group.d-flex.flex-gap-1.align-items-center.justify-content-center.mb-4.container-sm
+        textarea#summary.form-control.form-control-lg.bg-dark.text-light.border-0.focus-ring.focus-ring-secondary(placeholder='Enter description' name='summary')=undefined===game ? '' : game.summary
+      div.form-group.d-flex.flex-gap-1.align-items-center.justify-content-center.mb-4.container-sm
+        input#year.form-control.form-control-lg.bg-dark.text-light.border-0.focus-ring.focus-ring-secondary(type='number', placeholder='Enter game year' name='year' required value=(undefined===game ? '' : game.year) )
+      div.form-group.d-flex.flex-gap-1.align-items-center.justify-content-center.mb-4.container-sm
+        input#price.form-control.form-control-lg.bg-dark.text-light.border-0.focus-ring.focus-ring-secondary(type='number', placeholder='Enter game price ($)' name='price' required value=(undefined===game ? '' : game.price) )
+      div.form-group.d-flex.flex-gap-1.align-items-center.justify-content-center.mb-5.container-sm
+        input#stocknumber.form-control.form-control-lg.bg-dark.text-light.border-0.focus-ring.focus-ring-secondary(type='text', placeholder='Enter game stock number' name='stocknumber' required value=(undefined===game ? '' : game.number_in_stock) )
+      
+      div.checkbox-group.d-flex.flex-gap-1.flex-column.align-items-center.justify-content-center.mb-5.container-sm
+        label.fs-5 Choose Platforms: 
+        div.form-group.d-flex.flex-gap-1.j.justify-content-center.form-control.form-control-lg.bg-dark.text-light.border-0.focus-ring.focus-ring-secondary.flex-wrap
+          for platform in platforms 
+            div
+              if platform.checked 
+                input.checkbox-input(type='checkbox', name='platform', id=platform._id value=platform._id checked)
+              else 
+                input.checkbox-input(type='checkbox', name='platform', id=platform._id value=platform._id )
+              label.text-capitalize(for=platform._id) &nbsp;#{platform.name}
+      
+      div.checkbox-group.d-flex.flex-gap-1.flex-column.align-items-center.justify-content-center.mb-5.container-sm
+        label.fs-5 Choose Genres: 
+        div.form-group.d-flex.flex-gap-1.j.justify-content-center.form-control.form-control-lg.bg-dark.text-light.border-0.focus-ring.focus-ring-secondary.flex-wrap
+          for genre in genres 
+            div
+              if genre.checked 
+                input.checkbox-input(type='checkbox', name='genre', id=genre._id value=genre._id checked)
+              else 
+                input.checkbox-input(type='checkbox', name='genre', id=genre._id value=genre._id )
+              label.text-capitalize(for=genre._id) &nbsp;#{genre.name}
+      div.form-group.d-flex.justify-content-center
+        button.btn.btn-light.fs-5.fw-semibold(type='submit') Submit      
+                

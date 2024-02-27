@@ -29,13 +29,33 @@ ul {
   list-style-type: none;
 }
 
-input[type="text"] {
+input[type="text"],
+input[type="number"],
+select,
+textarea {
   max-width: 30rem;
   width: 100%;
 }
 
+.checkbox-group {
+  max-width: 40rem;
+  width: 100%;
+}
+
+textarea {
+  height: 10rem;
+  resize: vertical;
+}
+
 input::placeholder {
   color: rgba(255, 255, 255, 0.425) !important;
+}
+
+select option {
+  color: rgba(255, 255, 255, 0.425);
+}
+select option:first-child {
+  color: #fff;
 }
 
 .nav {
