@@ -159,3 +159,45 @@ exports.game_create_post = [
     }
   }),
 ];
+
+// Display game update form on GET.
+exports.game_update_get = asyncHandler(async (req, res, next) => {
+  const [game, allPublishers, allPlatforms, allGenres] = await Promise.all([
+    Game.findById(req.params.id).exec(),
+    Publisher.find().sort({ name: 1 }).exec(),
+    Platform.find().sort({ name: 1 }).exec(),
+    Genre.find().sort({ name: 1 }).exec(),
+  ]);
+
+  if (game === null) {
+    const error = new Error("Game not found");
+    error.status = 404;
+    return next(error);
+  }
+
+  for (const genre of allGenres) {
+    if (game.genre.includes(genre._id)) {
+      genre.checked = "true";
+    }
+  }
+
+  console.log(allGenres);
+
+  for (const platform of allPlatforms) {
+    if (game.platform.includes(platform._id)) {
+      platform.checked = "true";
+    }
+  }
+
+  res.render("game_form", {
+    title: "Update Game",
+    game: game,
+    publishers: allPublishers,
+    platforms: allPlatforms,
+    genres: allGenres,
+  });
+
+  // console.log(game);
+
+  // res.send(req.params.id);
+});
