@@ -22,3 +22,10 @@ exports.platform_detail = asyncHandler(async (req, res, next) => {
     games: allGamesByPlatform,
   });
 });
+
+// display platform create from from on Get
+exports.platform_create_get = asyncHandler(async (req, res, next) => {
+  res.render("platform_form", { title: "Add Platform" });
+});
+
+// handle platform create on POST
