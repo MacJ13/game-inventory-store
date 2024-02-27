@@ -35,3 +35,7 @@ exports.publisher_detail = asyncHandler(async (req, res, next) => {
     games: allGamesByPublisher,
   });
 });
+
+exports.publisher_create_get = asyncHandler(async (req, res, next) => {
+  res.render("publisher_form", { title: "Add New Publisher" });
+});

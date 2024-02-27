@@ -6,6 +6,9 @@ const publisher_controller = require("../controllers/publisherController");
 // publisher route
 
 router.get("/all", publisher_controller.publisher_list);
+
+router.get("/create", publisher_controller.publisher_create_get);
+
 router.get("/:id", publisher_controller.publisher_detail);
 
 module.exports = router;
