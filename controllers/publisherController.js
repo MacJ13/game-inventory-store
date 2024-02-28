@@ -144,3 +144,20 @@ exports.publisher_update_post = [
     }
   }),
 ];
+
+exports.publisher_delete_get = asyncHandler(async (req, res, next) => {
+  const [publisher, gamesByPublisher] = await Promise.all([
+    Publisher.findById(req.params.id).exec(),
+    Game.find({ publisher: req.params.id }, "title").sort({ title: 1 }).exec(),
+  ]);
+
+  if (publisher === null) {
+    res.redirect("/publisher/all");
+  }
+
+  res.render("publisher_delete", {
+    title: "Delete Publisher",
+    publisher: publisher,
+    games: gamesByPublisher,
+  });
+});

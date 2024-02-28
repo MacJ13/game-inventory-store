@@ -12,7 +12,7 @@ block content
         p.mb-3.fs-5 Country: #[span.fw-semibold #{publisher.country}]
       div.d-flex.flex-gap-1.justify-content-center
         a.btn.btn-light.fs-5.fw-semibold.text-uppercase(href=publisher.url + '/update') Update  
-        a.btn.btn-danger.fs-5.fw-semibold.text-uppercase(href='#') Delete     
+        a.btn.btn-danger.fs-5.fw-semibold.text-uppercase(href=publisher.url + '/delete') Delete     
     if games.length 
       ul.container
         h3.fs-5.text-capitalize.mb-3 Publisher Games:
