@@ -31,7 +31,6 @@ exports.platform_create_get = asyncHandler(async (req, res, next) => {
 exports.platform_create_post = [
   body("name", "platform name should contain at least 2 characters")
     .trim()
-    .toLowerCase()
     .isLength({ min: 2 })
     .escape(),
   // Process request after validation and sanitization
@@ -79,11 +78,7 @@ exports.platform_update_get = asyncHandler(async (req, res, next) => {
 });
 
 exports.platform_update_post = [
-  body("name", "name must not be empty")
-    .trim()
-    .toLowerCase()
-    .isLength({ min: 2 })
-    .escape(),
+  body("name", "name must not be empty").trim().isLength({ min: 2 }).escape(),
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
 
