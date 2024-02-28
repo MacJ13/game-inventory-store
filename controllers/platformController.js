@@ -12,10 +12,7 @@ exports.platform_list = asyncHandler(async (req, res, next) => {
 exports.platform_detail = asyncHandler(async (req, res, next) => {
   const [platform, allGamesByPlatform] = await Promise.all([
     Platform.findById(req.params.id).exec(),
-    Game.find({ platform: req.params.id })
-      .sort({ title: 1 })
-      .populate("title")
-      .exec(),
+    Game.find({ platform: req.params.id }).sort({ title: 1 }).exec(),
   ]);
 
   res.render("platform_detail", {
@@ -108,3 +105,20 @@ exports.platform_update_post = [
     }
   }),
 ];
+
+exports.platform_delete_get = asyncHandler(async (req, res, next) => {
+  const [platform, allGamesByPlatform] = await Promise.all([
+    Platform.findById(req.params.id).exec(),
+    Game.find({ platform: req.params.id }).sort({ name: 1 }).exec(),
+  ]);
+
+  if (platform === null) {
+    res.redirect("/platform/all");
+  } else {
+    res.render("platform_delete", {
+      title: "Delete",
+      platform,
+      games: allGamesByPlatform,
+    });
+  }
+});

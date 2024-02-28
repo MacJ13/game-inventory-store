@@ -7,7 +7,7 @@ block content
       h1.text-capitalize #{title}
       div.d-flex.flex-gap-1.justify-content-center
         a.btn.btn-light.fs-5.fw-semibold.text-uppercase(href=platform.url + "/update") Update  
-        a.btn.btn-danger.fs-5.fw-semibold.text-uppercase(href='#') Delete
+        a.btn.btn-danger.fs-5.fw-semibold.text-uppercase(href=platform.url + "/delete") Delete
 
     if games.length 
       ul.container 
