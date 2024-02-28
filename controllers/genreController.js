@@ -117,3 +117,20 @@ exports.genre_update_post = [
     }
   }),
 ];
+
+exports.genre_delete_get = asyncHandler(async (req, res, next) => {
+  const [genre, allGamesByGenre] = await Promise.all([
+    Genre.findById(req.params.id).exec(),
+    Game.find({ genre: req.params.id }).sort({ name: 1 }).exec(),
+  ]);
+
+  if (genre === null) {
+    return res.redirect("/genre/all");
+  }
+
+  res.render("genre_delete", {
+    title: "Delete",
+    genre,
+    games: allGamesByGenre,
+  });
+});
