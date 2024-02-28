@@ -92,6 +92,7 @@ exports.publisher_create_post = [
   }),
 ];
 
+// Display Publisher update form on GET.
 exports.publisher_update_get = asyncHandler(async (req, res, next) => {
   const publisher = await Publisher.findById(req.params.id).exec();
 
@@ -104,3 +105,42 @@ exports.publisher_update_get = asyncHandler(async (req, res, next) => {
     publisher: publisher,
   });
 });
+
+// handle Publisher update on POST
+exports.publisher_update_post = [
+  body("name").trim().toLowerCase().isLength({ min: 3 }).escape(),
+  body("country").trim().isLength({ min: 3 }).escape(),
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+
+    const publisher = new Publisher({
+      name: req.body.name,
+      country: req.body.country,
+      _id: req.params.id,
+    });
+
+    console.log({ publisher });
+
+    if (!errors.isEmpty()) {
+      res.render("publisher_form", {
+        title: "Update Publisher",
+        publisher: publisher,
+        errors: errors.array(),
+      });
+
+      return;
+    } else {
+      const updatedPublisher = await Publisher.findById(req.params.id).exec();
+
+      if (updatedPublisher.name === publisher.name) {
+        res.redirect(publisher.url);
+      } else {
+        updatedPublisher.name = publisher.name;
+        updatedPublisher.country = publisher.country;
+        await updatedPublisher.save();
+
+        res.redirect(updatedPublisher.url);
+      }
+    }
+  }),
+];

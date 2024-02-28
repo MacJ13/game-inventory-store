@@ -13,6 +13,8 @@ router.post("/create", publisher_controller.publisher_create_post);
 
 router.get("/:id/update", publisher_controller.publisher_update_get);
 
+router.post("/:id/update", publisher_controller.publisher_update_post);
+
 router.get("/:id", publisher_controller.publisher_detail);
 
 module.exports = router;
