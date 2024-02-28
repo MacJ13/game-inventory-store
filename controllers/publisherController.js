@@ -161,3 +161,15 @@ exports.publisher_delete_get = asyncHandler(async (req, res, next) => {
     games: gamesByPublisher,
   });
 });
+
+// handle Publisher delete on POST
+exports.publisher_delete_post = asyncHandler(async (req, res, next) => {
+  // get body data from delete form int this case it will be id
+  const id = req.body.publisherid;
+
+  // remove publisher from database
+  const publisher = await Publisher.deleteOne({ _id: id }).exec();
+
+  // after remove publisher we go to publisher all view
+  res.redirect("/publisher/all");
+});
