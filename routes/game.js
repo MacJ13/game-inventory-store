@@ -17,6 +17,8 @@ router.post("/create", game_controller.game_create_post);
 
 router.get("/:id/delete", game_controller.game_delete_get);
 
+router.post("/:id/delete", game_controller.game_delete_post);
+
 router.get("/:id/update", game_controller.game_update_get);
 
 router.post("/:id/update", game_controller.game_update_post);

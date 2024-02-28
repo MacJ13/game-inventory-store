@@ -310,3 +310,16 @@ exports.game_delete_get = asyncHandler(async (req, res, next) => {
   }
   res.render("game_delete", { title: "Delete Game", game: game });
 });
+
+// handle Game delete on POST
+exports.game_delete_post = asyncHandler(async (req, res, next) => {
+  // get body data from delete form int this case it will be id
+  const id = req.body.gameid;
+
+  // remove game from database
+  await Game.deleteOne({ _id: id }).exec();
+
+  // after remove game we go to game all view
+
+  res.redirect("/game/all");
+});
