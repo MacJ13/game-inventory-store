@@ -293,10 +293,20 @@ exports.game_update_post = [
       return;
     } else {
       // Data from is valid. Update the record.
-
       const updatedGame = await Game.findByIdAndUpdate(req.params.id, game, {});
-
       res.redirect(updatedGame.url);
     }
   }),
 ];
+
+// Display Game delete form on GET.
+exports.game_delete_get = asyncHandler(async (req, res, next) => {
+  console.log(req.params.id);
+
+  const game = await Game.findById(req.params.id).exec();
+
+  if (game === null) {
+    res.redirect("/game/all");
+  }
+  res.render("game_delete", { title: "Delete Game", game: game });
+});
