@@ -134,3 +134,11 @@ exports.genre_delete_get = asyncHandler(async (req, res, next) => {
     games: allGamesByGenre,
   });
 });
+
+exports.genre_delete_post = asyncHandler(async (req, res, next) => {
+  const id = req.body.genreid;
+
+  await Genre.deleteOne({ _id: id }).exec();
+
+  res.redirect("/genre/all");
+});
