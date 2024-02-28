@@ -20,6 +20,7 @@ exports.platform_detail = asyncHandler(async (req, res, next) => {
 
   res.render("platform_detail", {
     title: platform.name,
+    platform: platform,
     games: allGamesByPlatform,
   });
 });
@@ -69,3 +70,13 @@ exports.platform_create_post = [
     }
   }),
 ];
+
+exports.platform_update_get = asyncHandler(async (req, res, next) => {
+  const platform = await Platform.findById(req.params.id).exec();
+
+  if (platform === null) {
+    res.redirect("/platform/all");
+  }
+
+  res.render("platform_form", { title: "Update Platform", platform: platform });
+});
