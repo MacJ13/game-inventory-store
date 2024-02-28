@@ -91,3 +91,16 @@ exports.publisher_create_post = [
     }
   }),
 ];
+
+exports.publisher_update_get = asyncHandler(async (req, res, next) => {
+  const publisher = await Publisher.findById(req.params.id).exec();
+
+  if (publisher === null) {
+    res.redirect("/publisher/all");
+  }
+
+  res.render("publisher_form", {
+    title: "Update Publisher",
+    publisher: publisher,
+  });
+});
