@@ -122,3 +122,14 @@ exports.platform_delete_get = asyncHandler(async (req, res, next) => {
     });
   }
 });
+
+exports.platform_delete_post = asyncHandler(async (req, res, next) => {
+  // get body data from delete form int this case it will be id
+  const id = req.body.platformid;
+
+  // remove platform from database
+  await Platform.deleteOne({ _id: id }).exec();
+
+  // after remove platform we go to platform all view
+  res.redirect("/platform/all");
+});

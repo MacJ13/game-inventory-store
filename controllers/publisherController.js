@@ -168,7 +168,7 @@ exports.publisher_delete_post = asyncHandler(async (req, res, next) => {
   const id = req.body.publisherid;
 
   // remove publisher from database
-  const publisher = await Publisher.deleteOne({ _id: id }).exec();
+  await Publisher.deleteOne({ _id: id }).exec();
 
   // after remove publisher we go to publisher all view
   res.redirect("/publisher/all");
