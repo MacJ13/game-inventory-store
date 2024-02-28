@@ -1,0 +1,18 @@
+extends layout 
+
+block content 
+  div.container.px-5.py-5
+    div.d-flex.flex-column.flex-gap-1.text-center.mb-3
+      h1=title
+      h2.text-capitalize #{game.title}
+      p.fs-5 Are you sure you want to delete this Game?
+      
+
+    div.d-flex.flex-column.flex-gap-1.text-center
+     
+
+      form(method='POST')
+        div.form-group.d-flex.justify-content-center
+          input#name.form-control.form-control-lg.bg-dark.text-light.border-0.focus-ring.focus-ring-secondary(type='hidden', name='gameid', value=game._id )
+        div.form-group.d-flex.justify-content-center
+          button.btn.btn-danger.fs-5.fw-semibold(type='submit') Delete Game 
