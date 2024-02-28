@@ -80,3 +80,31 @@ exports.platform_update_get = asyncHandler(async (req, res, next) => {
 
   res.render("platform_form", { title: "Update Platform", platform: platform });
 });
+
+exports.platform_update_post = [
+  body("name", "name must not be empty")
+    .trim()
+    .toLowerCase()
+    .isLength({ min: 2 })
+    .escape(),
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+
+    const platform = new Platform({ name: req.body.name, _id: req.params.id });
+
+    if (!errors.isEmpty()) {
+      res.render("platform_form", {
+        title: "Update Platform",
+        platform,
+        errors: errors.array(),
+      });
+      return;
+    } else {
+      const updatedPlatform = await Platform.findById(req.params.id).exec();
+      updatedPlatform.name = platform.name;
+      await updatedPlatform.save();
+
+      res.redirect(updatedPlatform.url);
+    }
+  }),
+];
