@@ -79,3 +79,13 @@ exports.genre_create_post = [
     }
   }),
 ];
+
+exports.genre_update_get = asyncHandler(async (req, res, next) => {
+  const genre = await Genre.findById(req.params.id).exec();
+
+  if (genre === null) {
+    return res.redirect("/genre/all");
+  }
+
+  res.render("genre_form", { title: "Update genre", genre: genre });
+});

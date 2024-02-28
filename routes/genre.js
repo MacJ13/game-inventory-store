@@ -9,6 +9,8 @@ router.get("/create", genre_controller.genre_create_get);
 
 router.post("/create", genre_controller.genre_create_post);
 
+router.get("/:id/update", genre_controller.genre_update_get);
+
 router.get("/:id", genre_controller.genre_detail);
 
 module.exports = router;
