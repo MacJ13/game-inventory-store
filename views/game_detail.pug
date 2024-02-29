@@ -8,13 +8,13 @@ block content
       p.text-center.mb-5 #{game.summary}
       div.d-flex.justify-content-between.mb-4.border-bottom
         div
-          p.d-flex.flex-gap-1.align-items-center Publisher: #[a.fw-semibold(href=game.publisher.url) #{game.publisher.name}]
-          p.d-flex.flex-gap-1.align-items-center price:  #[span.fw-semibold #{game.price}$]
+          p.d-flex.flex-gap-1.align-items-center.text-capitalize Publisher: #[a.fw-semibold(href=game.publisher.url) #{game.publisher.name}]
+          p.d-flex.flex-gap-1.align-items-center Price:  #[span.fw-semibold #{game.price}$]
         div
           p.d-flex.flex-gap-1.align-items-center Released year: #[span.fw-semibold #{game.year}]
-          p.d-flex.flex-gap-1 number stock: #[span.fw-semibold #{game.number_in_stock}]
+          p.d-flex.flex-gap-1 Number Stock: #[span.fw-semibold #{game.number_in_stock}]
 
-      div.border-bottom.mb-3
+      div.border-bottom.mb-3.text-capitalize
         div.d-flex.flex-gap-1.mb-4.align-items-center
           | Platforms:
           each platform in game.platform 
