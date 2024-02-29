@@ -93,6 +93,7 @@ exports.genre_update_get = asyncHandler(async (req, res, next) => {
 exports.genre_update_post = [
   body("name", "name should contains at least 3 characters")
     .trim()
+    .toLowerCase()
     .isLength({ min: 3 })
     .escape(),
   asyncHandler(async (req, res, next) => {
@@ -110,8 +111,10 @@ exports.genre_update_post = [
     } else {
       const updatedGenre = await Genre.findById(req.params.id).exec();
 
-      updatedGenre.name = genre.name;
-      await updatedGenre.save();
+      if (updatedGenre.name !== genre.name) {
+        updatedGenre.name = genre.name;
+        await updatedGenre.save();
+      }
 
       res.redirect(updatedGenre.url);
     }

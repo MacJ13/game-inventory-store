@@ -31,6 +31,7 @@ exports.platform_create_get = asyncHandler(async (req, res, next) => {
 exports.platform_create_post = [
   body("name", "platform name should contain at least 2 characters")
     .trim()
+    .toLowerCase()
     .isLength({ min: 2 })
     .escape(),
   // Process request after validation and sanitization
@@ -51,13 +52,13 @@ exports.platform_create_post = [
     } else {
       // Data from form is valid
       // Check if Platform with same name already exists.
-      const platfromExist = await Platform.findOne({
+      const platformExist = await Platform.findOne({
         name: req.body.name,
       }).exec();
 
-      if (platfromExist) {
+      if (platformExist) {
         // Platform exists, redirect to its detail page.
-        res.redirect(platfromExist.url);
+        res.redirect(platformExist.url);
       } else {
         // New platform save. Redirect to platform detail page.
         await platform.save();
@@ -78,7 +79,11 @@ exports.platform_update_get = asyncHandler(async (req, res, next) => {
 });
 
 exports.platform_update_post = [
-  body("name", "name must not be empty").trim().isLength({ min: 2 }).escape(),
+  body("name", "name must not be empty")
+    .toLowerCase()
+    .trim()
+    .isLength({ min: 2 })
+    .escape(),
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
 
@@ -93,8 +98,13 @@ exports.platform_update_post = [
       return;
     } else {
       const updatedPlatform = await Platform.findById(req.params.id).exec();
+
+      // if (
+      //   updatedPlatform.name.toLowerCase() !== platform.name.toLocaleLowerCase()
+      // ) {
       updatedPlatform.name = platform.name;
       await updatedPlatform.save();
+      // }
 
       res.redirect(updatedPlatform.url);
     }
