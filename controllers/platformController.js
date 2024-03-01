@@ -166,20 +166,50 @@ exports.platform_delete_get = asyncHandler(async (req, res, next) => {
     res.redirect("/platform/all");
   } else {
     res.render("platform_delete", {
-      title: "Delete",
+      title: "Delete Platform",
       platform,
       games: allGamesByPlatform,
     });
   }
 });
 
-exports.platform_delete_post = asyncHandler(async (req, res, next) => {
-  // get body data from delete form int this case it will be id
-  const id = req.body.platformid;
+exports.platform_delete_post = [
+  body("password")
+    .trim()
+    .notEmpty()
+    .withMessage("Password must not be empty")
+    .custom((value) => {
+      if (correctPassword !== value) {
+        throw new Error();
+      }
 
-  // remove platform from database
-  await Platform.deleteOne({ _id: id }).exec();
+      return true;
+    })
+    .withMessage("Value does not match secret key"),
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
 
-  // after remove platform we go to platform all view
-  res.redirect("/platform/all");
-});
+    // get body data from delete form int this case it will be id
+    const id = req.body.platformid;
+
+    if (!errors.isEmpty()) {
+      const [platform, allGamesByPlatform] = await Promise.all([
+        Platform.findById(id).exec(),
+        Game.find({ platform: id }).sort({ name: 1 }).exec(),
+      ]);
+
+      res.render("platform_delete", {
+        title: "Delete Platform",
+        platform,
+        games: allGamesByPlatform,
+        errors: errors.array(),
+      });
+    } else {
+      // remove platform from database
+      await Platform.deleteOne({ _id: id }).exec();
+
+      // after remove platform we go to platform all view
+      res.redirect("/platform/all");
+    }
+  }),
+];
