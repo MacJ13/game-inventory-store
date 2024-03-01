@@ -3,6 +3,9 @@ const Game = require("../models/game");
 
 const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
+const dotenv = require("dotenv").config();
+
+const correctPassword = process.env.SECRET_CODE;
 
 // Display list of all Publishers
 exports.publisher_list = asyncHandler(async (req, res, next) => {
@@ -43,16 +46,39 @@ exports.publisher_create_get = asyncHandler(async (req, res, next) => {
 
 // handle platform create on POST
 exports.publisher_create_post = [
-  body("name", "publisher should contain at least 3 characters")
+  body("name")
+    .trim()
+    .toLowerCase()
+    .notEmpty()
+    .withMessage("Publisher name must not be empty")
+    .isLength({ min: 3 })
+    .withMessage("publisher should contain at least 3 characters")
+    .escape()
+    .custom(async (value) => {
+      const publisherExists = await Publisher.findOne({ name: value }).exec();
+      if (publisherExists) {
+        return Promise.reject("Publisher already in use");
+      }
+    }),
+  body("country")
     .trim()
     .toLowerCase()
     .isLength({ min: 3 })
+    .withMessage("Country should contain at leat 3 characters")
     .escape(),
-  body("country", "country should contain at least 3 characters")
+  body("password")
     .trim()
     .toLowerCase()
-    .isLength({ min: 3 })
-    .escape(),
+    .notEmpty()
+    .withMessage("Secret key must not be empty")
+    .custom((value) => {
+      if (correctPassword !== value) {
+        throw new Error();
+      }
+      // Indicates the success of this synchronous custom validator
+      return true;
+    })
+    .withMessage("Value does not match secret key"),
   // Process request after validation and sanitization
 
   asyncHandler(async (req, res, next) => {
@@ -75,19 +101,24 @@ exports.publisher_create_post = [
     } else {
       // Data from form is valid
       // Check if Platform with same name already exists.
-      const publisherExists = await Publisher.findOne({
-        name: req.body.name,
-      }).exec();
+      await publisher.save();
+      res.redirect(publisher.url);
 
-      if (publisherExists) {
-        // Platform exists, redirect to its detail page.
-        res.redirect(publisherExists.url);
-      } else {
-        // New platform save. Redirect to platform detail page.
-        await publisher.save();
+      // Data from form is valid
+      // Check if Platform with same name already exists.
+      // const publisherExists = await Publisher.findOne({
+      //   name: req.body.name,
+      // }).exec();
 
-        res.redirect(publisher.url);
-      }
+      // if (publisherExists) {
+      //   // Platform exists, redirect to its detail page.
+      //   res.redirect(publisherExists.url);
+      // } else {
+      //   // New platform save. Redirect to platform detail page.
+      //   await publisher.save();
+
+      //   res.redirect(publisher.url);
+      // }
     }
   }),
 ];
