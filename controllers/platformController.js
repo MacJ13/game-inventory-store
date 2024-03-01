@@ -2,6 +2,9 @@ const Platform = require("../models/platform");
 const Game = require("../models/game");
 const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
+const dotenv = require("dotenv").config();
+
+const correctPassword = process.env.SECRET_CODE;
 
 exports.platform_list = asyncHandler(async (req, res, next) => {
   const platforms = await Platform.find({}).sort({ name: 1 }).exec();
@@ -24,16 +27,37 @@ exports.platform_detail = asyncHandler(async (req, res, next) => {
 
 // display platform create from from on Get
 exports.platform_create_get = asyncHandler(async (req, res, next) => {
-  res.render("platform_form", { title: "Add Platform" });
+  res.render("platform_form", { title: "Add New Platform" });
 });
 
 // handle platform create on POST
 exports.platform_create_post = [
-  body("name", "platform name should contain at least 2 characters")
+  body("name")
     .trim()
     .toLowerCase()
+    .notEmpty()
+    .withMessage("platform name must not be empty")
     .isLength({ min: 2 })
-    .escape(),
+    .withMessage("Platform name must contain at least 2 characters")
+    .custom(async (value) => {
+      const platformExists = await Platform.findOne({ name: value });
+      if (platformExists) {
+        return Promise.reject("Platform already in use");
+      }
+    }),
+  body("password")
+    .trim()
+    .notEmpty()
+    .withMessage("Password must not be empty")
+    .custom((value) => {
+      if (correctPassword !== value) {
+        throw new Error();
+      }
+      // Indicates the success of this synchronous custom validator
+      return true;
+    })
+    .withMessage("Value does not match secret key"),
+
   // Process request after validation and sanitization
   asyncHandler(async (req, res, next) => {
     // Extract the validation, errors from a request.
@@ -44,7 +68,7 @@ exports.platform_create_post = [
     if (!errors.isEmpty()) {
       // There are errors. Render the form again with sanitized values/error messages.
       res.render("platform_form", {
-        title: "Add Platform",
+        title: "Add New Platform",
         platform,
         errors: errors.array(),
       });
@@ -52,18 +76,22 @@ exports.platform_create_post = [
     } else {
       // Data from form is valid
       // Check if Platform with same name already exists.
-      const platformExist = await Platform.findOne({
-        name: req.body.name,
-      }).exec();
+      await platform.save();
+      res.redirect(platform.url);
 
-      if (platformExist) {
-        // Platform exists, redirect to its detail page.
-        res.redirect(platformExist.url);
-      } else {
-        // New platform save. Redirect to platform detail page.
-        await platform.save();
-        res.redirect(platform.url);
-      }
+      // Data from form is valid
+      // Check if Platform with same name already exists.
+      // const platformExist = await Platform.findOne({
+      //   name: req.body.name,
+      // }).exec();
+      //   if (platformExist) {
+      //     // Platform exists, redirect to its detail page.
+      //     res.redirect(platformExist.url);
+      //   } else {
+      //     // New platform save. Redirect to platform detail page.
+      //     await platform.save();
+      //     res.redirect(platform.url);
+      //   }
     }
   }),
 ];
@@ -79,11 +107,33 @@ exports.platform_update_get = asyncHandler(async (req, res, next) => {
 });
 
 exports.platform_update_post = [
-  body("name", "name must not be empty")
-    .toLowerCase()
+  body("name")
     .trim()
+    .toLowerCase()
+    .notEmpty()
+    .withMessage("Platform name must not be empty")
     .isLength({ min: 2 })
-    .escape(),
+    .withMessage("Platform name must contain at least 2 characters")
+    .custom(async (value) => {
+      const platformExists = await Platform.findOne({ name: value }).exec();
+      if (platformExists) {
+        return Promise.reject("Platform already in use");
+      }
+    }),
+  body("password")
+    .trim()
+    .notEmpty()
+    .withMessage("Password must not be empty")
+    .escape()
+    .custom((value) => {
+      if (correctPassword !== value) {
+        throw new Error();
+      }
+
+      return true;
+    })
+    .withMessage("Value does not match secret key"),
+  // Process request after validation and sanitization
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
 
@@ -98,13 +148,8 @@ exports.platform_update_post = [
       return;
     } else {
       const updatedPlatform = await Platform.findById(req.params.id).exec();
-
-      // if (
-      //   updatedPlatform.name.toLowerCase() !== platform.name.toLocaleLowerCase()
-      // ) {
       updatedPlatform.name = platform.name;
       await updatedPlatform.save();
-      // }
 
       res.redirect(updatedPlatform.url);
     }
