@@ -60,6 +60,7 @@ exports.genre_create_post = [
     })
     .escape(),
   body("password")
+    .trim()
     .notEmpty()
     .withMessage("Password must not be empty")
     .custom((value) => {
@@ -118,11 +119,32 @@ exports.genre_update_get = asyncHandler(async (req, res, next) => {
 });
 
 exports.genre_update_post = [
-  body("name", "name should contains at least 3 characters")
+  body("name")
     .trim()
     .toLowerCase()
+    .notEmpty()
+    .withMessage("Genre name must not be empty")
     .isLength({ min: 3 })
+    .withMessage("Genre name must contain at least 3 characters")
+    .custom(async (value) => {
+      const genreExists = await Genre.findOne({ name: value });
+      if (genreExists) {
+        return Promise.reject("Genre already in use");
+      }
+    })
     .escape(),
+  body("password")
+    .trim()
+    .notEmpty()
+    .withMessage("Password must not be empty")
+    .custom((value) => {
+      if (correctPassword !== value) {
+        throw new Error();
+      }
+      // Indicates the success of this synchronous custom validator
+      return true;
+    })
+    .withMessage("Value does not match secret key"),
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
 
@@ -138,10 +160,10 @@ exports.genre_update_post = [
     } else {
       const updatedGenre = await Genre.findById(req.params.id).exec();
 
-      if (updatedGenre.name !== genre.name) {
-        updatedGenre.name = genre.name;
-        await updatedGenre.save();
-      }
+      // if (updatedGenre.name !== genre.name) {
+      updatedGenre.name = genre.name;
+      await updatedGenre.save();
+      // }
 
       res.redirect(updatedGenre.url);
     }
@@ -167,6 +189,7 @@ exports.genre_delete_get = asyncHandler(async (req, res, next) => {
 
 exports.genre_delete_post = [
   body("password")
+    .trim()
     .notEmpty()
     .withMessage("Password must not be empty")
     .custom((value) => {
