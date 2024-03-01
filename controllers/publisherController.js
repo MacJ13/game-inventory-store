@@ -139,8 +139,39 @@ exports.publisher_update_get = asyncHandler(async (req, res, next) => {
 
 // handle Publisher update on POST
 exports.publisher_update_post = [
-  body("name").trim().toLowerCase().isLength({ min: 3 }).escape(),
-  body("country").trim().isLength({ min: 3 }).escape(),
+  body("name")
+    .trim()
+    .toLowerCase()
+    .notEmpty()
+    .withMessage("Publisher name must not be empty")
+    .isLength({ min: 3 })
+    .withMessage("publisher should contain at least 3 characters")
+    .escape()
+    .custom(async (value) => {
+      const publisherExists = await Publisher.findOne({ name: value }).exec();
+      if (publisherExists) {
+        return Promise.reject("Publisher already in use");
+      }
+    }),
+  body("country")
+    .trim()
+    .toLowerCase()
+    .isLength({ min: 3 })
+    .withMessage("Country should contain at leat 3 characters")
+    .escape(),
+  body("password")
+    .trim()
+    .toLowerCase()
+    .notEmpty()
+    .withMessage("Secret key must not be empty")
+    .custom((value) => {
+      if (correctPassword !== value) {
+        throw new Error();
+      }
+      // Indicates the success of this synchronous custom validator
+      return true;
+    })
+    .withMessage("Value does not match secret key"),
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
 
@@ -163,15 +194,19 @@ exports.publisher_update_post = [
     } else {
       const updatedPublisher = await Publisher.findById(req.params.id).exec();
 
-      if (updatedPublisher.name === publisher.name) {
-        res.redirect(publisher.url);
-      } else {
-        updatedPublisher.name = publisher.name;
-        updatedPublisher.country = publisher.country;
-        await updatedPublisher.save();
+      updatedPublisher.name = publisher.name;
+      updatedPublisher.country = publisher.country;
+      await updatedPublisher.save();
+      res.redirect(updatedPublisher.url);
+      // if (updatedPublisher.name === publisher.name) {
+      //   res.redirect(publisher.url);
+      // } else {
+      //   updatedPublisher.name = publisher.name;
+      //   updatedPublisher.country = publisher.country;
+      //   await updatedPublisher.save();
 
-        res.redirect(updatedPublisher.url);
-      }
+      //   res.redirect(updatedPublisher.url);
+      // }
     }
   }),
 ];
