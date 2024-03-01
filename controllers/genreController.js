@@ -159,18 +159,45 @@ exports.genre_delete_get = asyncHandler(async (req, res, next) => {
   }
 
   res.render("genre_delete", {
-    title: "Delete",
+    title: "Delete Genre",
     genre,
     games: allGamesByGenre,
   });
 });
 
 exports.genre_delete_post = [
+  body("password")
+    .notEmpty()
+    .withMessage("Password must not be empty")
+    .custom((value) => {
+      if (correctPassword !== value) {
+        throw new Error();
+      }
+      // Indicates the success of this synchronous custom validator
+      return true;
+    })
+    .withMessage("Value does not match secret key"),
   asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+
     const id = req.body.genreid;
 
-    await Genre.deleteOne({ _id: id }).exec();
+    if (!errors.isEmpty()) {
+      // const genre = await Genre.findById(id).exec();
+      const [genre, allGamesByGenre] = await Promise.all([
+        Genre.findById(req.params.id).exec(),
+        Game.find({ genre: req.params.id }).sort({ name: 1 }).exec(),
+      ]);
 
-    res.redirect("/genre/all");
+      res.render("genre_delete", {
+        title: "Delete Genre",
+        genre,
+        games: allGamesByGenre,
+        errors: errors.array(),
+      });
+    } else {
+      await Genre.deleteOne({ _id: id }).exec();
+      res.redirect("/genre/all");
+    }
   }),
 ];
