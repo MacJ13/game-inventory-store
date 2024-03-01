@@ -32,6 +32,7 @@ ul {
 input[type="text"],
 input[type="number"],
 input[type="file"],
+input[type="password"],
 select,
 textarea {
   max-width: 30rem;
