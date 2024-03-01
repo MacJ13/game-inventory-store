@@ -18,11 +18,16 @@ const GameSchema = new Schema({
   year: { type: Number, min: 1990, max: new Date().getFullYear() },
   price: { type: Number, min: 1 },
   number_in_stock: String,
+  img_src: String,
 });
 
 // Virtual for author's URL
 GameSchema.virtual("url").get(function () {
   return `/game/${this._id}`;
+});
+
+GameSchema.virtual("img_url").get(function () {
+  return `/images/${this.img_src}`;
 });
 
 // Export model
