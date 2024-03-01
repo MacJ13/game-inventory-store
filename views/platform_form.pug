@@ -10,6 +10,8 @@ block content
           li!= error.msg
 
     form(method='POST')
+      div.form-group.d-flex.flex-gap-1.align-items-center.justify-content-center.mb-4.container-sm
+        input#password.form-control.form-control-lg.bg-dark.text-light.border-0.focus-ring.focus-ring-secondary(type='password', placeholder='Enter secret key' name='password' required value='' )
       div.form-group.d-flex.flex-gap-1.align-items-center.justify-content-center.mb-5.container-sm
          //- label.fw-medium(for='name') Name
          input#platform.form-control.form-control-lg.bg-dark.text-light.border-0.focus-ring.focus-ring-secondary(type='text', placeholder='Enter platform name' name='name' required value=(undefined===platform ? '' : platform.name) )
