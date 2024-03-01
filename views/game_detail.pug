@@ -2,10 +2,14 @@ extends layout
 
 block content 
   div.py-5 
-    h1.text-capitalize.mb-3.text-center.mb-4 #{title}
+    
    
     div.container.px-5
-      p.text-center.mb-5 #{game.summary}
+      div.d-flex.mb-5
+        img.image.image-detail(src=game.img_src===undefined ? '/images/nocover.jpg' : game.img_url )
+        div.ms-5
+          h1.text-capitalize.mb-5 #{title}
+          p=game.summary
       div.d-flex.justify-content-between.mb-4.border-bottom
         div
           p.d-flex.flex-gap-1.align-items-center.text-capitalize Publisher: #[a.fw-semibold(href=game.publisher.url) #{game.publisher.name}]

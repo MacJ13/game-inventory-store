@@ -9,10 +9,12 @@ block content
           ul 
             each game in games 
               li.fw-semibold.px-3.d-flex.justify-content-between.mb-5
-                div.fs-5.d-flex.flex-column
-                  a.fs-3.text-capitalize.fw-semibold.mb-3(href=game.url) #{game.title}
-                  div.text-light.text-opacity-75.mb-3.text-capitalize #{game.publisher.name}
-                  div.text-light.text-opacity-75.mb-3 Released year: #{game.year}      
+                div.fs-5.d-flex
+                  img.image.image-list(src=game.img_src===undefined ? '/images/nocover.jpg' : game.img_url)
+                  div.ms-5.d-flex.flex-column
+                    a.fs-3.text-capitalize.fw-semibold.mb-3(href=game.url) #{game.title}
+                    div.text-light.text-opacity-75.mb-3.text-capitalize #{game.publisher.name}
+                    div.text-light.text-opacity-75.mb-3 Released year: #{game.year}      
                 //- a.btn.btn-light.fs-5.fw-semibold.text-uppercase.align-self-start(href=game.url) more detail
 
         else 
