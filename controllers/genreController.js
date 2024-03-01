@@ -2,6 +2,9 @@ const Genre = require("../models/genre");
 const Game = require("../models/game");
 const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
+const dotenv = require("dotenv").config();
+
+const correctPassword = process.env.SECRET_CODE;
 
 // display genre list
 exports.genre_list = asyncHandler(async (req, res, next) => {
@@ -42,11 +45,31 @@ exports.genre_create_get = asyncHandler(async (req, res, next) => {
 // handle Genre create on POST
 exports.genre_create_post = [
   // Validate and sanitize the name field.
-  body("name", "Genre name must contain at least 3 characters")
+  body("name")
     .trim()
     .toLowerCase()
+    .notEmpty()
+    .withMessage("Genre name must not be empty")
     .isLength({ min: 3 })
+    .withMessage("Genre name must contain at least 3 characters")
+    .custom(async (value) => {
+      const genreExists = await Genre.findOne({ name: value });
+      if (genreExists) {
+        return Promise.reject("Genre already in use");
+      }
+    })
     .escape(),
+  body("password")
+    .notEmpty()
+    .withMessage("Password must not be empty")
+    .custom((value) => {
+      if (correctPassword !== value) {
+        throw new Error();
+      }
+      // Indicates the success of this synchronous custom validator
+      return true;
+    })
+    .withMessage("Value does not match secret key"),
 
   // Process request after validation and sanitization
   asyncHandler(async (req, res, next) => {
@@ -56,7 +79,7 @@ exports.genre_create_post = [
     // Create a genre object with escaped and trimmed data;
     const genre = new Genre({ name: req.body.name });
 
-    if (!errors.isEmpty()) {
+    if (!errors.isEmpty() || !correctPassword) {
       // There are errors. Render the form again with sanitized values/error messages.
       res.render("genre_form", {
         title: "Add New Genre",
@@ -65,17 +88,21 @@ exports.genre_create_post = [
       });
       return;
     } else {
+      // New genre save. Redirect to genre detail page.
+      await genre.save();
+      res.redirect(genre.url);
+
       // Data from form is valid
       // Check if Genre with same name already exists.
-      const genreExists = await Genre.findOne({ name: req.body.name }).exec();
-      if (genreExists) {
-        // Genre exists, redirect to its detail page.
-        res.redirect(genreExists.url);
-      } else {
-        await genre.save();
-        // New genre save. Redirect to genre detail page.
-        res.redirect(genre.url);
-      }
+      // const genreExists = await Genre.findOne({ name: req.body.name }).exec();
+      // if (genreExists) {
+      //   // Genre exists, redirect to its detail page.
+      //   res.redirect(genreExists.url);
+      // } else {
+      //   await genre.save();
+      //   // New genre save. Redirect to genre detail page.
+      //   res.redirect(genre.url);
+      // }
     }
   }),
 ];
@@ -138,10 +165,12 @@ exports.genre_delete_get = asyncHandler(async (req, res, next) => {
   });
 });
 
-exports.genre_delete_post = asyncHandler(async (req, res, next) => {
-  const id = req.body.genreid;
+exports.genre_delete_post = [
+  asyncHandler(async (req, res, next) => {
+    const id = req.body.genreid;
 
-  await Genre.deleteOne({ _id: id }).exec();
+    await Genre.deleteOne({ _id: id }).exec();
 
-  res.redirect("/genre/all");
-});
+    res.redirect("/genre/all");
+  }),
+];
