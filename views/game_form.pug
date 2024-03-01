@@ -9,7 +9,7 @@ block content
         for error in errors
           li!= error.msg
 
-    form(method='POST')
+    form(method='POST', enctype='multipart/form-data')
       div.form-group.d-flex.flex-gap-1.align-items-center.justify-content-center.mb-4.container-sm
         input#title.form-control.form-control-lg.bg-dark.text-light.border-0.focus-ring.focus-ring-secondary(type='text', placeholder='Enter game title' name='title' required value=(undefined===game ? '' : game.title) )
       div.form-group.d-flex.flex-gap-1.align-items-center.justify-content-center.mb-4.container-sm
@@ -29,9 +29,10 @@ block content
         input#year.form-control.form-control-lg.bg-dark.text-light.border-0.focus-ring.focus-ring-secondary(type='number', placeholder='Enter game year' name='year' required value=(undefined===game ? '' : game.year) )
       div.form-group.d-flex.flex-gap-1.align-items-center.justify-content-center.mb-4.container-sm
         input#price.form-control.form-control-lg.bg-dark.text-light.border-0.focus-ring.focus-ring-secondary(type='number', placeholder='Enter game price ($)' name='price' required value=(undefined===game ? '' : game.price) )
-      div.form-group.d-flex.flex-gap-1.align-items-center.justify-content-center.mb-5.container-sm
+      div.form-group.d-flex.flex-gap-1.align-items-center.justify-content-center.mb-4.container-sm
         input#stocknumber.form-control.form-control-lg.bg-dark.text-light.border-0.focus-ring.focus-ring-secondary(type='text', placeholder='Enter game stock number' name='numberstock' required value=(undefined===game ? '' : game.number_in_stock) )
-      
+      div.form-group.d-flex.flex-gap-1.align-items-center.justify-content-center.mb-5.container-sm
+        input#imagefile.form-control.form-control-lg.bg-dark.text-light.border-0.focus-ring.focus-ring-secondary(type='file', placeholder='enter image file' name='image' )
       div.checkbox-group.d-flex.flex-gap-1.flex-column.align-items-center.justify-content-center.mb-5.container-sm
         label.fs-5 Choose Platforms: 
         div.form-group.d-flex.flex-gap-1.j.justify-content-center.form-control.form-control-lg.bg-dark.text-light.border-0.focus-ring.focus-ring-secondary.flex-wrap
