@@ -3,9 +3,28 @@ const Publisher = require("../models/publisher");
 const Platform = require("../models/platform");
 const Genre = require("../models/genre");
 
+const fs = require("fs/promises");
+
 const asyncHandler = require("express-async-handler");
+const multer = require("multer");
 
 const { body, validationResult } = require("express-validator");
+const path = require("path");
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "public/images");
+  },
+
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "_" + Math.round(Math.random() * 1e9);
+    const [filename, ext] = file.originalname.split(".");
+
+    cb(null, filename + "_" + uniqueSuffix + "." + ext);
+  },
+});
+
+const upload = multer({ storage: storage });
 
 exports.index = asyncHandler(async (req, res, next) => {
   const numGames = await Game.countDocuments({}).exec();
@@ -17,7 +36,7 @@ exports.index = asyncHandler(async (req, res, next) => {
 });
 
 exports.game_list = asyncHandler(async (req, res, next) => {
-  const games = await Game.find({}, "title publisher year")
+  const games = await Game.find({}, "title publisher year img_src")
     .populate("publisher")
     .exec();
 
@@ -73,7 +92,9 @@ exports.game_create_post = [
 
     next();
   },
-
+  // req.file is the `avatar` file
+  // req.body will hold the text fields, if there were any
+  upload.single("image"),
   // Validate and sanitize fields
   body("title", "Title should contains at least 3 characters.")
     .trim()
@@ -116,10 +137,14 @@ exports.game_create_post = [
       year: Number(req.body.year),
       price: Number(req.body.price),
       number_in_stock: req.body.numberstock,
+      img_src: req.file ? req.file.filename : undefined,
     });
 
     if (!errors.isEmpty()) {
       // There are errors. Render form again with sanitized values/error messages.
+
+      // remove image if req.file exists
+      if (req.file) await fs.rm(req.file.path);
 
       // Get all publishers, platforms and genres for form.
       const [allPublishers, allPlatforms, allGenres] = await Promise.all([
@@ -186,8 +211,6 @@ exports.game_update_get = asyncHandler(async (req, res, next) => {
     }
   }
 
-  console.log(allGenres);
-
   for (const platform of allPlatforms) {
     if (game.platform.includes(platform._id)) {
       platform.checked = "true";
@@ -219,16 +242,17 @@ exports.game_update_post = [
 
     next();
   },
+  upload.single("image"),
   body("title", "title should contain at least 3 characters")
     .trim()
-    .toLowerCase()
     .isLength({ min: 3 })
-    .escape(),
+    .unescape(),
   body("publisher", "publisher should not be empty")
     .trim()
     .toLowerCase()
-    .escape(),
-  body("summary", "Summary must not be empty.").trim().escape(),
+    .escape()
+    .unescape(),
+  body("summary", "Summary must not be empty.").trim().escape().unescape(),
   body("year", "year should not be empty")
     .trim()
     .isLength({ min: 4, max: 4 })
@@ -251,11 +275,12 @@ exports.game_update_post = [
       title: req.body.title,
       publisher: req.body.publisher,
       summary: req.body.summary,
-      year: req.body.year,
-      price: req.body.price,
+      year: Number(req.body.year),
+      price: Number(req.body.price),
       number_in_stock: req.body.numberstock,
       platform: req.body.platform === "undefined" ? [] : req.body.platform,
       genre: req.body.genre === "undefined" ? [] : req.body.genre,
+      img_src: req.file ? req.file.filename : undefined,
       _id: req.params.id,
     });
 
@@ -268,6 +293,9 @@ exports.game_update_post = [
         Platform.find().sort({ name: 1 }).exec(),
         Genre.find().sort({ name: 1 }).exec(),
       ]);
+
+      // remove image if req.file exists
+      if (req.file) await fs.rm(req.file.path);
 
       // Mark our selected genres as checked.
       for (const genre of allGenres) {
@@ -293,7 +321,23 @@ exports.game_update_post = [
       return;
     } else {
       // Data from is valid. Update the record.
-      const updatedGame = await Game.findByIdAndUpdate(req.params.id, game, {});
+      const updatedGame = await Game.findById(req.params.id).exec();
+
+      updatedGame.publisher = game.publisher;
+      updatedGame.title = game.title;
+      updatedGame.summary = game.summary;
+      updatedGame.year = game.year;
+      updatedGame.price = game.price;
+      updatedGame.number_in_stock = game.number_in_stock;
+      updatedGame.platform = game.platform;
+      updatedGame.genre = game.genre;
+
+      if (req.file) {
+        await fs.rm(path.join("public", updatedGame.img_url));
+        updatedGame.img_src = game.img_src;
+      }
+
+      await updatedGame.save();
       res.redirect(updatedGame.url);
     }
   }),
@@ -301,8 +345,6 @@ exports.game_update_post = [
 
 // Display Game delete form on GET.
 exports.game_delete_get = asyncHandler(async (req, res, next) => {
-  console.log(req.params.id);
-
   const game = await Game.findById(req.params.id).exec();
 
   if (game === null) {
@@ -316,10 +358,14 @@ exports.game_delete_post = asyncHandler(async (req, res, next) => {
   // get body data from delete form int this case it will be id
   const id = req.body.gameid;
 
+  const game = await Game.findById(id).exec();
+
+  // remove image game cover
+  if (game.img_src) await fs.rm(path.join("public", game.img_url));
+
   // remove game from database
-  await Game.deleteOne({ _id: id }).exec();
+  await Game.deleteOne({ _id: game._id }).exec();
 
   // after remove game we go to game all view
-
   res.redirect("/game/all");
 });
