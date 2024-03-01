@@ -31,6 +31,7 @@ ul {
 
 input[type="text"],
 input[type="number"],
+input[type="file"],
 select,
 textarea {
   max-width: 30rem;
@@ -73,6 +74,20 @@ select option:first-child {
 
 .row {
   height: 100%;
+}
+
+.image {
+  display: block;
+  object-fit: cover;
+  border-radius: 0.5rem;
+}
+
+.image-list {
+  width: 8.5rem;
+}
+
+.image-detail {
+  width: 10rem;
 }
 
 .container-min-full {
