@@ -11,6 +11,8 @@ block content
 
     form(method='POST', enctype='multipart/form-data')
       div.form-group.d-flex.flex-gap-1.align-items-center.justify-content-center.mb-4.container-sm
+        input#password.form-control.form-control-lg.bg-dark.text-light.border-0.focus-ring.focus-ring-secondary(type='password', placeholder='Enter secret key' name='password' required value='' )
+      div.form-group.d-flex.flex-gap-1.align-items-center.justify-content-center.mb-4.container-sm
         input#title.form-control.form-control-lg.bg-dark.text-light.border-0.focus-ring.focus-ring-secondary(type='text', placeholder='Enter game title' name='title' required value=(undefined===game ? '' : game.title) )
       div.form-group.d-flex.flex-gap-1.align-items-center.justify-content-center.mb-4.container-sm
         select#publisher.text-capitalize.form-control.form-control-lg.bg-dark.text-light.border-0.focus-ring.focus-ring-secondary(name='publisher' required)
