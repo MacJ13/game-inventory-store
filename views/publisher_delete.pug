@@ -14,10 +14,16 @@ block content
             li.fw-semibold.px-3.d-flex.mb-4
               a.fs-3.text-capitalize.fw-semibold.mb-3(href=game.url) #{game.title}
       else 
+        if errors
+          ul.d-flex.justify-content-center.mb-4
+            for error in errors
+              li!= error.msg
         p.fs-5 Are you sure you want to delete this publisher?
 
-        div.d-flex.flex-column.flex-gap-1.text-center
+        div.d-flex.flex-column.flex-gap-1.text-center.w-100
           form(method='POST')
+            div.form-group.d-flex.flex-gap-1.align-items-center.justify-content-center.mb-4
+              input#password.form-control.form-control-lg.bg-dark.text-light.border-0.focus-ring.focus-ring-secondary(type='password', placeholder='Enter secret key' name='password' required value='' )
             div.form-group.d-flex.justify-content-center
               input#name.form-control.form-control-lg.bg-dark.text-light.border-0.focus-ring.focus-ring-secondary(type='hidden', name='publisherid', value=publisher._id )
             div.form-group.d-flex.justify-content-center
