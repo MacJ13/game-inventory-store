@@ -41,6 +41,7 @@ exports.index = asyncHandler(async (req, res, next) => {
 exports.game_list = asyncHandler(async (req, res, next) => {
   const games = await Game.find({}, "title publisher year img_src")
     .populate("publisher")
+    .sort({ title: 1 })
     .exec();
 
   res.render("game_list", { title: "Games", games: games });
@@ -153,7 +154,6 @@ exports.game_create_post = [
   body("genre.*").escape(),
   body("password")
     .trim()
-    .toLowerCase()
     .notEmpty()
     .withMessage("Secret key must not be empty")
     .custom((value) => {
@@ -288,30 +288,71 @@ exports.game_update_post = [
     next();
   },
   upload.single("image"),
-  body("title", "title should contain at least 3 characters")
-    .trim()
-    .isLength({ min: 3 })
-    .unescape(),
-  body("publisher", "publisher should not be empty")
+  body("title")
     .trim()
     .toLowerCase()
-    .escape()
-    .unescape(),
-  body("summary", "Summary must not be empty.").trim().escape().unescape(),
-  body("year", "year should not be empty")
-    .trim()
-    .isLength({ min: 4, max: 4 })
-    .escape(),
-  body("price", "price should not be empty")
-    .trim()
-    .isLength({ min: 1 })
-    .escape(),
-  body("numberstock", "Number stock must not be empty.")
-    .trim()
+    .notEmpty()
+    .withMessage("Title must not be empty")
     .isLength({ min: 3 })
+    .withMessage("Title should contains at least 3 characters")
+    .escape()
+    .custom(async (value, { req }) => {
+      const gameExists = await Game.findOne({
+        title: value,
+        year: Number(req.body.year),
+      }).exec();
+
+      if (gameExists) {
+        return Promise.reject("Game already in use");
+      }
+    }),
+
+  body("publisher")
+    .trim()
+    .notEmpty()
+    .withMessage("Publisher must not be empty")
+    .escape(),
+  body("summary").trim().escape(),
+  body("year")
+    .trim()
+    .notEmpty()
+    .withMessage("Year must not be empty")
+    .isNumeric()
+    .withMessage("Year must be numeric")
+    .isLength({ min: 4, max: 4 })
+    .withMessage("Valid value")
+    .escape(),
+  body("price")
+    .trim()
+    .notEmpty()
+    .withMessage("Price must not be empty")
+    .isNumeric()
+    .withMessage("Price must be numeric")
+    .isLength({ min: 1 })
+    .withMessage("Valid value")
+    .escape(),
+  body("numberstock")
+    .trim()
+    .notEmpty()
+    .withMessage("Number stock must not be empty.")
+    .isLength({ min: 3 })
+    .withMessage("Numberstock should contains at least 3 characters")
     .escape(),
   body("platform.*").escape(),
   body("genre.*").escape(),
+  body("password")
+    .trim()
+    .notEmpty()
+    .withMessage("Secret key must not be empty")
+    .escape()
+    .custom((value) => {
+      if (correctPassword !== value) {
+        throw new Error();
+      }
+
+      return true;
+    })
+    .withMessage("Value does not match secret key"),
   // Process request after validation and sanitization
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
