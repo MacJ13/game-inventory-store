@@ -440,18 +440,43 @@ exports.game_delete_get = asyncHandler(async (req, res, next) => {
 });
 
 // handle Game delete on POST
-exports.game_delete_post = asyncHandler(async (req, res, next) => {
-  // get body data from delete form int this case it will be id
-  const id = req.body.gameid;
+exports.game_delete_post = [
+  body("password")
+    .trim()
+    .notEmpty()
+    .withMessage("Secret key must not be empty")
+    .escape()
+    .custom((value) => {
+      if (correctPassword !== value) {
+        throw new Error();
+      }
 
-  const game = await Game.findById(id).exec();
+      return true;
+    })
+    .withMessage("Value does not match secret key"),
+  asyncHandler(async (req, res, next) => {
+    // get body data from delete form int this case it will be id
+    const errors = validationResult(req);
 
-  // remove image game cover
-  if (game.img_src) await fs.rm(path.join("public", game.img_url));
+    const id = req.body.gameid;
 
-  // remove game from database
-  await Game.deleteOne({ _id: game._id }).exec();
+    const game = await Game.findById(id).exec();
 
-  // after remove game we go to game all view
-  res.redirect("/game/all");
-});
+    if (!errors.isEmpty()) {
+      res.render("game_delete", {
+        title: "Delete Game",
+        game: game,
+        errors: errors.array(),
+      });
+    } else {
+      // remove image game cover
+      if (game.img_src) await fs.rm(path.join("public", game.img_url));
+
+      // remove game from database
+      await Game.deleteOne({ _id: game._id }).exec();
+
+      // after remove game we go to game all view
+      res.redirect("/game/all");
+    }
+  }),
+];
