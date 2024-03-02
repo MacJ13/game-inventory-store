@@ -10,6 +10,9 @@ const multer = require("multer");
 
 const { body, validationResult } = require("express-validator");
 const path = require("path");
+const dotenv = require("dotenv").config();
+
+const correctPassword = process.env.SECRET_CODE;
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -96,33 +99,71 @@ exports.game_create_post = [
   // req.body will hold the text fields, if there were any
   upload.single("image"),
   // Validate and sanitize fields
-  body("title", "Title should contains at least 3 characters.")
+  body("title")
     .trim()
     .toLowerCase()
+    .notEmpty()
+    .withMessage("Title must not be empty")
     .isLength({ min: 3 })
-    .escape(),
-  body("publisher", "Publisher must not be empty.")
+    .withMessage("Title should contains at least 3 characters")
+    .escape()
+    .custom(async (value, { req }) => {
+      const gameExists = await Game.findOne({
+        title: value,
+        year: Number(req.body.year),
+      }).exec();
+
+      if (gameExists) {
+        return Promise.reject("Game already in use");
+      }
+    }),
+
+  body("publisher")
     .trim()
-    .isLength({ min: 1 })
+    .notEmpty()
+    .withMessage("Publisher must not be empty")
     .escape(),
-  body("summary", "Summary must not be empty.")
+  body("summary").trim().escape(),
+  body("year")
     .trim()
-    .isLength({ min: 1 })
-    .escape(),
-  body("year", "Year must not be empty.")
-    .trim()
+    .notEmpty()
+    .withMessage("Year must not be empty")
+    .isNumeric()
+    .withMessage("Year must be numeric")
     .isLength({ min: 4, max: 4 })
+    .withMessage("Valid value")
     .escape(),
-  body("price", "Price must not be empty.")
+  body("price")
     .trim()
+    .notEmpty()
+    .withMessage("Price must not be empty")
+    .isNumeric()
+    .withMessage("Price must be numeric")
     .isLength({ min: 1 })
+    .withMessage("Valid value")
     .escape(),
-  body("numberstock", "Number stock must not be empty.")
+  body("numberstock")
     .trim()
+    .notEmpty()
+    .withMessage("Number stock must not be empty.")
     .isLength({ min: 3 })
+    .withMessage("Numberstock should contains at least 3 characters")
     .escape(),
   body("platform.*").escape(),
   body("genre.*").escape(),
+  body("password")
+    .trim()
+    .toLowerCase()
+    .notEmpty()
+    .withMessage("Secret key must not be empty")
+    .custom((value) => {
+      if (correctPassword !== value) {
+        throw new Error();
+      }
+      // Indicates the success of this synchronous custom validator
+      return true;
+    })
+    .withMessage("Value does not match secret key"),
   // Process request after validation and sanitization
   asyncHandler(async (req, res, next) => {
     // Extract the validation errors from a request.
@@ -175,17 +216,21 @@ exports.game_create_post = [
         errors: errors.array(),
       });
     } else {
-      const gameExists = await Game.findOne({
-        title: req.body.title,
-        year: Number(req.body.year),
-      });
-      if (gameExists) {
-        res.redirect(gameExists.url);
-      } else {
-        // Data form is valud. Save game.
-        await game.save();
-        res.redirect(game.url);
-      }
+      // Data form is valud. Save game.
+      await game.save();
+      res.redirect(game.url);
+
+      // const gameExists = await Game.findOne({
+      //   title: req.body.title,
+      //   year: Number(req.body.year),
+      // });
+      // if (gameExists) {
+      //   res.redirect(gameExists.url);
+      // } else {
+      //   // Data form is valud. Save game.
+      //   await game.save();
+      //   res.redirect(game.url);
+      // }
     }
   }),
 ];
