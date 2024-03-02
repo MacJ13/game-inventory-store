@@ -229,13 +229,42 @@ exports.publisher_delete_get = asyncHandler(async (req, res, next) => {
 });
 
 // handle Publisher delete on POST
-exports.publisher_delete_post = asyncHandler(async (req, res, next) => {
-  // get body data from delete form int this case it will be id
-  const id = req.body.publisherid;
+exports.publisher_delete_post = [
+  body("password")
+    .trim()
+    .notEmpty()
+    .withMessage("Password must not be empty")
+    .escape()
+    .custom((value) => {
+      if (correctPassword !== value) {
+        throw new Error();
+      }
+      return true;
+    })
+    .withMessage("Value does not match secret key"),
+  asyncHandler(async (req, res, next) => {
+    // get body data from delete form int this case it will be id
+    const errors = validationResult(req);
 
-  // remove publisher from database
-  await Publisher.deleteOne({ _id: id }).exec();
+    const id = req.body.publisherid;
 
-  // after remove publisher we go to publisher all view
-  res.redirect("/publisher/all");
-});
+    if (!errors.isEmpty()) {
+      const [publisher, gamesByPublisher] = await Promise.all([
+        Publisher.findById(id).exec(),
+        Game.find({ publisher: id }, "title").sort({ title: 1 }).exec(),
+      ]);
+
+      res.render("publisher_delete", {
+        title: "Delete Publisher",
+        publisher,
+        games: gamesByPublisher,
+        errors: errors.array(),
+      });
+    } else {
+      // remove publisher from database
+      await Publisher.deleteOne({ _id: id }).exec();
+      // after remove publisher we go to publisher all view
+      res.redirect("/publisher/all");
+    }
+  }),
+];
