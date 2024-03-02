@@ -7,9 +7,15 @@ block content
       h2.text-capitalize #{game.title}
       p.fs-5 Are you sure you want to delete this Game?
       
-
-    div.d-flex.flex-column.flex-gap-1.text-center
+      if errors
+        ul.d-flex.flex-column.flex-gap-1.align-items-center.justify-content-center.mb-4
+          for error in errors
+            li!= error.msg
+            
+    div.d-flex.flex-column.flex-gap-1.text-center.w-100
       form(method='POST')
+        div.form-group.d-flex.flex-gap-1.align-items-center.justify-content-center.mb-4.container-sm
+          input#password.form-control.form-control-lg.bg-dark.text-light.border-0.focus-ring.focus-ring-secondary(type='password', placeholder='Enter secret key' name='password' required value='' )
         div.form-group.d-flex.justify-content-center
           input#name.form-control.form-control-lg.bg-dark.text-light.border-0.focus-ring.focus-ring-secondary(type='hidden', name='gameid', value=game._id )
         div.form-group.d-flex.justify-content-center
