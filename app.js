@@ -12,6 +12,7 @@ const publisherRouter = require("./routes/publisher");
 const genreRouter = require("./routes/genre");
 const platformRouter = require("./routes/platform");
 const debug = require("debug")("mongoose");
+const compression = require("compression");
 
 const app = express();
 
@@ -39,6 +40,8 @@ app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+
+app.use(compression()); // Compress all routes
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", indexRouter);
