@@ -11,6 +11,7 @@ const multer = require("multer");
 const { body, validationResult } = require("express-validator");
 const path = require("path");
 const dotenv = require("dotenv").config();
+const debug = require("debug")("game");
 
 const correctPassword = process.env.SECRET_CODE;
 
@@ -54,6 +55,7 @@ exports.game_detail = asyncHandler(async (req, res, next) => {
     .exec();
 
   if (game === null) {
+    debug(`id not found on detail page: ${req.params.id}`);
     const err = new Error("Game not found");
     err.status = 404;
     return next(err);

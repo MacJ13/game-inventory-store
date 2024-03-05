@@ -4,6 +4,7 @@ const Game = require("../models/game");
 const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
 const dotenv = require("dotenv").config();
+const debug = require("debug")("publisher");
 
 const correctPassword = process.env.SECRET_CODE;
 
@@ -28,6 +29,7 @@ exports.publisher_detail = asyncHandler(async (req, res, next) => {
   ]);
 
   if (publisher === null) {
+    debug(`id not found on detail page: ${req.params.id}`);
     const error = new Error("Publisher not found");
     error.status = 404;
     return next(error);

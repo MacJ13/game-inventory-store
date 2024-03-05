@@ -11,6 +11,7 @@ const gameRouter = require("./routes/game");
 const publisherRouter = require("./routes/publisher");
 const genreRouter = require("./routes/genre");
 const platformRouter = require("./routes/platform");
+const debug = require("debug")("mongoose");
 
 const app = express();
 
@@ -25,10 +26,10 @@ const mongoDB = process.env.MONGODB_URI || dev_db_url;
 // Wait for database to connect, logging an error if there is a problem
 async function main() {
   await mongoose.connect(mongoDB);
-  console.log("connect");
+  debug("database is conntected");
 }
 
-main().catch((err) => console.log(err));
+main().catch((err) => debug(err.message));
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));

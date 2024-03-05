@@ -3,6 +3,7 @@ const Game = require("../models/game");
 const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
 const dotenv = require("dotenv").config();
+const debug = require("debug")("platform");
 
 const correctPassword = process.env.SECRET_CODE;
 
@@ -17,6 +18,14 @@ exports.platform_detail = asyncHandler(async (req, res, next) => {
     Platform.findById(req.params.id).exec(),
     Game.find({ platform: req.params.id }).sort({ title: 1 }).exec(),
   ]);
+
+  if (platform === null) {
+    debug(`id not found on detail page: ${req.params.id}`);
+    const error = new Error("Platform not found");
+    error.status = 404;
+
+    return next(error);
+  }
 
   res.render("platform_detail", {
     title: platform.name,
